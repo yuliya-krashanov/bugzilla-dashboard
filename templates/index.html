@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div style="padding-top: 50px;">
+    <img style="float: right;" src="https://redwerk.com/wp-content/themes/redwerk-nestor-child/img/redwerk_logo.png"></img>
+    <div style="clear: both;"></div>
+    <hr/>
+    <form method="post" action="/report">
+        <select name="project">
+            {% for p in projects %}
+                <option value="{{ p.id }}">{{ p.name }}</option>
+            {% endfor %}
+        </select>
+        <input required style="width: 20%;" name="daterange" />
+        <input type="submit" value="Get me a report" />
+        <br/><br/>
+        <i>Date format</i>:<br/>
+        <input type="radio" name="dateformat" id="uafmt" value="UA"/>
+        <label for="uafmt" style="margin-bottom: 0px;">&nbsp;Ukraine</label>
+        <br/>
+        <input checked type="radio" name="dateformat" value="US" id="usfmt" />
+        <label for="usfmt">&nbsp;US</label>
+    </form>
+    <hr/>
+    <i>Of course you can enjoy random animated cats instead of generating boring reports:</i><br/><br/>
+    <a href="http://thecatapi.com"><img src="http://thecatapi.com/api/images/get?format=src&type=gif"></a>
+    <hr/>
+</div>
+
+<script type="text/javascript">
+$(function(){
+    $('select').select2();
+    $('input[name="daterange"]').daterangepicker({
+        locale: {
+            format: 'DD.MM.YYYY',
+        },
+    });
+});
+</script>
+{% endblock %}
