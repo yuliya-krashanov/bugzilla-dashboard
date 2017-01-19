@@ -2,10 +2,8 @@
 from sqlalchemy import Column, DateTime, ForeignKey, Index, Integer, Numeric, SmallInteger, String, Table, text
 from sqlalchemy.dialects.mysql.base import LONGBLOB
 from sqlalchemy.orm import relationship
-from sqlalchemy.ext.declarative import declarative_base
+from dashboard.database import BugzillaBase as Base
 
-
-Base = declarative_base()
 metadata = Base.metadata
 
 

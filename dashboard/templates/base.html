@@ -1,0 +1,37 @@
+<!doctype html>
+<html>
+<head>
+<title>You can get some reports here</title>
+{% block head_meta %}
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+{% endblock %}
+{% block styles %}
+<link rel="stylesheet" href="{{ url_for('static', filename='public/css/all.css') }}">
+{% endblock %}
+</head>
+<body>
+<div class="wrapper">
+    <header class="header">
+        <div class="container">
+                <div class="logo">
+                    <a href="http://redwerk.com"><span class="glyphicon glyphicon-cog"></span></a>
+                </div>
+            </nav>
+        </div>
+    </header>
+    <div class="content">
+        <div class="container" id="container">
+            {% block content %}{% endblock %}
+        </div>
+    </div>
+    <footer>
+    </footer>
+</div>
+{% block scripts %}
+{% endblock %}
+</body>
+</html>

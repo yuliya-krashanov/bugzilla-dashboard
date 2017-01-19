@@ -1,0 +1,81 @@
+.dashboard{
+  &__header{
+     @include flex(center, space-between);
+    .datepicker{
+      color: $font-grey-color;
+      input{
+        background-color: $body-back-color;
+        border: none;
+        text-align: right;
+        float: right;
+      }
+    }
+  }
+  .row > div{
+    padding: 13px 10px;
+    .chart{
+      background-color: $chart-back-color;
+      box-shadow: 0 0 20px #bbb;
+      padding: 30px 50px;
+      box-sizing: border-box;
+      position: relative;
+      width: 100%;
+      height: 450px;
+      &--details {
+        height: auto
+      }
+
+      &__header{
+        @include flex(center, space-between);
+        margin-bottom: 20px;
+      }
+
+      &__button{
+        border: none;
+        &--close{
+          background: none;
+          color: $font-grey-color;
+          font-size: 20px;
+        }
+      }
+
+      &__container{
+        width: 100%;
+        height: calc(100% - 60px);
+      }
+
+      .settings{
+        margin-top: 40px;
+        @include flex(center, space-between);
+        &__zoom{
+          flex-grow: 1;
+        }
+        &__button{
+          width: 30px;
+          height: 30px;
+          background-color: #373A4D;
+          color: #fff;
+          border: none;
+          font-size: 22px;
+          margin-left: 10px;
+          line-height: 0;
+          &:hover{
+             background-color: $button-red-color;
+          }
+        }
+        .stats{
+          flex-grow: 1;
+          @include flex(center, space-between);
+          text-transform: uppercase;
+          color: $font-grey-color;
+          letter-spacing: 1px;
+          font-size: 12px;
+          span{
+            font-size: 25px;
+            color: $red;
+          }
+        }
+      }
+    }
+  }
+}
