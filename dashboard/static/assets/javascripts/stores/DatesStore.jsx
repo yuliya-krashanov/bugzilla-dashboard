@@ -6,7 +6,7 @@ import ActionTypes from '../constants/ActionTypes.jsx';
 class DatesStore extends EventEmitter {
     constructor() {
         super();
-        this.startDate = moment()/*.subtract(2, 'months')*/.startOf('month');
+        this.startDate = moment().subtract(2, 'months').startOf('month');
         this.endDate = moment().endOf('month').endOf('day');
     }
 

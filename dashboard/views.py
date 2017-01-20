@@ -43,15 +43,17 @@ def projects():
 
 @app.route("/api/states/", methods=['POST'])
 def states():
-    state_id = request.get_json().get('stateID')
-
-    projects_ids = [p.bz_project_id for p in sett_m.Project.query.filter(sett_m.Project.enable == 1)
-                    .filter(sett_m.Project.state_id == state_id).all()]
-
+    country_id = request.get_json().get('countryID')
     result = []
-    if projects_ids:
-        projects, states_hours = get_hours_by_place(projects_ids, sett_m.State)
-        result = states_hours
+    states_of_country = sett_m.State.query.filter(sett_m.State.country_id == country_id).all()
+
+    if states_of_country:
+        projects_ids = [p.bz_project_id for p in sett_m.Project.query.filter(sett_m.Project.enable == 1)
+                        .filter(sett_m.Project.country_id == country_id).all()]
+
+        if projects_ids:
+            projects, states_hours = get_hours_by_place(projects_ids, sett_m.State)
+            result = states_hours
 
     return jsonify(result)
 
@@ -62,7 +64,7 @@ def get_hours_by_place(bugzilla_db, settings_db, projects_ids, place_model):
     places = [{'id': place.id, 'name': place.name, 'projects': [int(p) for p in projects.split(',')]}
                  for projects, place in settings_db.query(func.group_concat(sett_m.Project.bz_project_id.distinct()),
                                                           place_model).join(place_model)
-                    .filter(sett_m.Project.enable == 1).group_by(sett_m.Project.country_id).all()]
+                    .filter(sett_m.Project.enable == 1).group_by(getattr(sett_m.Project, place_model().__class__.__name__.lower() + '_id')).all()]
 
     fmt = "%d.%m.%Y"
     dates = request.get_json()
@@ -143,7 +145,7 @@ class ProjectModelView(ProtectModelView):
     can_create = False
     column_display_pk = False
     column_hide_backrefs = False
-    column_list = ('id', 'name', 'enable', 'country')
+    column_list = ('id', 'name', 'enable', 'country', 'state')
     form_excluded_columns = ('bz_project_id')
 
 
