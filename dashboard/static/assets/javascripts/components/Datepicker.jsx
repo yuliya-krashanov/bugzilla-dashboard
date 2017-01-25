@@ -16,6 +16,7 @@ export default class Datepicker extends React.Component {
                 <DateRangePicker startDate={this.props.startDate} endDate={this.props.endDate} onApply={this.handleChangeDate}>
                     <input type="text" disabled
                            value={this.props.startDate.format(startDateFormat) + ' - ' + this.props.endDate.format('MMM D, Y')}  />
+                    <span><i className="fa fa-angle-down"></i></span>
                 </DateRangePicker>
             </div>
             );

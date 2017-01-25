@@ -39,7 +39,15 @@ module.exports = function (grunt) {
                   // includes files within path and its sub-directories
                   {
                       expand: true,
-                      cwd: 'assets/fonts/',
+                      cwd: 'node_modules/bootstrap-sass/fonts/',
+                      src: [
+                          '**'
+                      ],
+                      dest: 'public/fonts/'
+                  },
+                  {
+                      expand: true,
+                      cwd: 'node_modules/font-awesome/fonts/',
                       src: [
                           '**'
                       ],

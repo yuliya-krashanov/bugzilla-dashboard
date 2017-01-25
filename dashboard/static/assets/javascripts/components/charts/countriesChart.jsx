@@ -2,42 +2,12 @@ import React from 'react';
 import {Doughnut} from 'react-chartjs-2';
 import DashboardActions from '../../DashboardActions.jsx';
 import ProjectStore from '../../stores/ProjectStore.jsx';
+import {chartSettings, PieChartOptions} from '../../DashboardUtils.js';
 
-
-class chartSettings {
-    constructor(labels, data){
-      this.labels = labels;
-
-      this.datasets = [{
-          data: data,
-          backgroundColor: [
-            '#6CD0EA',
-            '#FFDE7D',
-            '#FE9ABE',
-            '#4AAF5F',
-            '#E63C3C'
-          ],
-          hoverBackgroundColor: [
-            '#6CD0EA',
-            '#FFDE7D',
-            '#FE9ABE',
-            '#4AAF5F',
-            '#E63C3C'
-          ]
-      }]
-    }
-}
 export default class CountriesChart extends React.Component {
      constructor(props){
         super(props);
-        this._options = {
-            legend: {
-                position: 'right',
-                fontSize: '22',
-                padding: '20px',
-                boxWidth: 10
-            }
-        };
+
         this.state = {
             statesActive: false,
             statesData: ProjectStore.getStatesData()
@@ -65,35 +35,34 @@ export default class CountriesChart extends React.Component {
 
      render() {
 
-        return <div className={"chart " + (this.state.statesActive ? "chart--two" : null)}>
+        return <div className={"chart " + (this.state.statesData.labels.length ? "chart--two " : null)
+                + (this.state.statesActive ? "chart--states-active " : null)}>
                 <div className="chart__wrapper">
                     <div className="chart__header">
                         <h3 className="chart__title">Countries</h3>
                     </div>
                     <div className="chart__container">
-                        <Doughnut data={new chartSettings(this.props.labels, this.props.data)} options={this._options}
+                        <Doughnut data={new chartSettings(this.props.labels, this.props.data)} options={PieChartOptions}
                                   onElementsClick={this.handleElementsClick.bind(this)} redraw={true} />
                     </div>
                 </div>
                 {this.state.statesData.labels.length ?
-                <div className="chart__wrapper">
-                    <div className="chart__header">
-                        <h3 className="chart__title">States</h3>
-                        <div className="chart__back" onClick={this.handleBackToCountries.bind(this)}>Back</div>
+                    <div className="chart__wrapper">
+                        <div className="chart__header">
+                            <h3 className="chart__title">States</h3>
+                            <span className="chart__button chart__button--back" onClick={this.handleBackToCountries.bind(this)}>
+                                <i className="fa fa-angle-left"></i> Back
+                            </span>
+                        </div>
+                        <div className="chart__container">
+                             <Doughnut data={new chartSettings(this.state.statesData.labels, this.state.statesData.data)}
+                                       options={PieChartOptions} redraw={true} />
+                        </div>
                     </div>
-                    <div className="chart__container">
-                         <Doughnut data={new chartSettings(this.state.statesData.labels, this.state.statesData.data)}
-                                   options={this._options} redraw={true} />
-                    </div>
-                </div>
-                    : null}
+                : null}
             </div>;
-
-
      }
 }
-
-
 
 CountriesChart.defaultProps = {};
 CountriesChart.propTypes = {};
