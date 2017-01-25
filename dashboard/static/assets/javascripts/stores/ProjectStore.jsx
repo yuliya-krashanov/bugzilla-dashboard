@@ -11,33 +11,34 @@ class ProjectStore extends EventEmitter {
         this.projectsData = {};
         this.chartProjectsData = {
             projects: {
-                data: [], labels: []
+                 labels: [], data: []
             },
             countries: {
-                data: [], labels: []
+                 labels: [], data: []
             }};
-        this.statesData = {};
+        this.statesData = { labels: [], data: [] };
     }
 
     projectDataLoaded (data) {
         this.projectsData = data;
-        this._formatProjectsData();
+        for (let items in this.projectsData){
+            if (this.projectsData.hasOwnProperty(items))
+                this.chartProjectsData[items] = this._formatDataToChart(this.projectsData[items])
+        }
         this.emit('updateProjectData');
     }
 
-    _formatProjectsData(){
-         for (let items in this.projectsData){
-            if (this.projectsData.hasOwnProperty(items))
-                this.chartProjectsData[items] = this.projectsData[items].reduce((fin, item) => {
-                     fin.labels.push(item.name);
-                     fin.data.push(item.hours);
-                     return fin;
-                 }, { labels: [], data: [] });
-        }
+
+    _formatDataToChart(data){
+        return data.reduce((fin, item) => {
+                 fin.labels.push(item.name);
+                 fin.data.push(item.hours);
+                 return fin;
+             }, { labels: [], data: [] });
     }
 
     statesDataLoaded (data) {
-        this.statesData = data;
+        this.statesData = this._formatDataToChart(data);
         this.emit('updateStatesData');
     }
 
@@ -60,26 +61,26 @@ class ProjectStore extends EventEmitter {
             .catch( console.log );
     }
 
-    loadStatesData (){
+    loadStatesData (country){
         fetch('api/states', {
             method: 'POST',
             headers: {
               'Accept': 'application/json',
               'Content-Type': 'application/json'
             },
-            body: JSON.stringify( Object.assign( DatesStore.getFormatDates()),
-                    {
-                        stateID: this.periods[this.activePeriod]
-                    }),
+            body: JSON.stringify( Object.assign( DatesStore.getFormatDates(),
+                {
+                    countryID: this.projectsData.countries[country].id
+                })),
 
         })
-            .then((response) => {
-                return response.json();
-            })
-            .then( (data) => {
-                this.statesDataLoaded(data);
-            })
-            .catch( console.log );
+        .then((response) => {
+            return response.json();
+        })
+        .then( (data) => {
+            this.statesDataLoaded(data);
+        })
+        .catch( console.log );
     }
 
     getChartProjectsData() {
