@@ -6,4 +6,3 @@ app.url_map.strict_slashes = False
 
 import dashboard.database
 import dashboard.views
-

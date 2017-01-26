@@ -1,13 +1,13 @@
 # Statement for enabling the development environment
-DEBUG = True
+DEBUG = False
 
 # Define the application directory
 import os
-BASE_DIR = os.path.abspath(os.path.dirname(__file__))
+CONFIG_DIR = os.path.abspath(os.path.dirname(__file__))
 
 # Define the database - we are working with
-BUGZILLA_DATABASE_URI = 'mysql+oursql://bugzilla:bugzilla@localhost/bugzilla'
-SETTINGS_DATABASE_URI = 'mysql+oursql://bugzilla:bugzilla@localhost/bugzilla-dashboard'
+BUGZILLA_DATABASE_URI = ''
+SETTINGS_DATABASE_URI = ''
 
 # Enable protection agains *Cross-site Request Forgery (CSRF)*
 CSRF_ENABLED = True
@@ -18,3 +18,5 @@ CSRF_SESSION_KEY = "secret"
 
 # Secret key for signing cookies
 SECRET_KEY = "secret"
+
+SERVER_NAME = '127.0.0.1:9003'

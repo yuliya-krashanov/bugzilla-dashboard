@@ -8,12 +8,12 @@ from flask_admin import Admin, AdminIndexView, helpers, expose
 from flask_admin.contrib.sqla import ModelView
 from flask_login import LoginManager, current_user, login_user, logout_user
 from wtforms import PasswordField
-from sqlalchemy import func
+from sqlalchemy import func, and_
 from sqlalchemy.orm import joinedload
 
 import dashboard.forms as forms
-import dashboard.models.settings_models as sett_m
-import dashboard.models.bugzilla_models as bugz_m
+import dashboard.models.settings_models as settings_models
+import dashboard.models.bugzilla_models as bugzilla_models
 from dashboard import app
 from dashboard.database import init_db, with_db
 
@@ -23,6 +23,7 @@ from dashboard.database import init_db, with_db
 def index(*args, **kwargs):
     return render_template('index.html')
 
+
 @app.errorhandler(404)
 def not_found(error):
     """Handle 404 errors."""
@@ -31,11 +32,12 @@ def not_found(error):
 
 @app.route("/api/projects/", methods=['POST'])
 def projects():
-    projects_ids = [p.bz_project_id for p in sett_m.Project.query.filter(sett_m.Project.enable == 1).all()]
+    projects_ids = [p.bz_project_id for p in
+                    settings_models.Project.query.filter(settings_models.Project.enable == 1).all()]
 
     result = []
     if projects_ids:
-        projects, countries_hours = get_hours_by_place(projects_ids, sett_m.Country)
+        projects, countries_hours = get_hours_by_place(projects_ids, settings_models.Country)
         result = {'projects': projects, 'countries': countries_hours}
 
     return jsonify(result)
@@ -45,14 +47,17 @@ def projects():
 def states():
     country_id = request.get_json().get('countryID')
     result = []
-    states_of_country = sett_m.State.query.filter(sett_m.State.country_id == country_id).all()
+    states_of_country = settings_models.State.query.filter(settings_models.State.country_id == country_id).all()
 
     if states_of_country:
-        projects_ids = [p.bz_project_id for p in sett_m.Project.query.filter(sett_m.Project.enable == 1)
-                        .filter(sett_m.Project.country_id == country_id).all()]
+        projects_ids = [p.bz_project_id for p in settings_models.Project.query
+            .filter(and_(
+                settings_models.Project.enable == 1,
+                settings_models.Project.country_id == country_id))
+            .all()]
 
         if projects_ids:
-            projects, states_hours = get_hours_by_place(projects_ids, sett_m.State)
+            projects, states_hours = get_hours_by_place(projects_ids, settings_models.State)
             result = states_hours
 
     return jsonify(result)
@@ -61,10 +66,12 @@ def states():
 @with_db
 def get_hours_by_place(bugzilla_db, settings_db, projects_ids, place_model):
 
+    query_places = settings_db.query(func.group_concat(settings_models.Project.bz_project_id.distinct()), place_model)\
+                   .join(place_model).filter(settings_models.Project.enable == 1)\
+                   .group_by(getattr(settings_models.Project, place_model().__class__.__name__.lower() + '_id')).all()
+
     places = [{'id': place.id, 'name': place.name, 'projects': [int(p) for p in projects.split(',')]}
-                 for projects, place in settings_db.query(func.group_concat(sett_m.Project.bz_project_id.distinct()),
-                                                          place_model).join(place_model)
-                    .filter(sett_m.Project.enable == 1).group_by(getattr(sett_m.Project, place_model().__class__.__name__.lower() + '_id')).all()]
+              for projects, place in query_places]
 
     fmt = "%d.%m.%Y"
     dates = request.get_json()
@@ -72,12 +79,19 @@ def get_hours_by_place(bugzilla_db, settings_db, projects_ids, place_model):
     end_date = datetime.datetime.strptime(dates.get('endDate'), fmt)
 
     # TODO: delete hardcoded fieldid
-    actions = bugzilla_db.query(bugz_m.BugsActivity, bugz_m.Bug.product_id, bugz_m.Product.name,
-                                func.sum(bugz_m.BugsActivity.added)) \
-        .join(bugz_m.BugsActivity.bug).options(joinedload('bug')).join(bugz_m.Bug.product) \
-        .filter(bugz_m.Bug.product_id.in_(projects_ids)) \
-        .filter(bugz_m.BugsActivity.bug_when >= start_date).filter(bugz_m.BugsActivity.bug_when <= end_date) \
-        .filter(bugz_m.BugsActivity.fieldid == 50).group_by(bugz_m.Bug.product_id).all()
+    actions = bugzilla_db.query(bugzilla_models.BugsActivity, bugzilla_models.Bug.product_id,
+                                bugzilla_models.Product.name,
+                                func.sum(bugzilla_models.BugsActivity.added)) \
+        .join(bugzilla_models.BugsActivity.bug).options(joinedload('bug')).join(bugzilla_models.Bug.product) \
+        .filter(
+        and_(
+            bugzilla_models.Bug.product_id.in_(projects_ids),
+            bugzilla_models.BugsActivity.bug_when >= start_date,
+            bugzilla_models.BugsActivity.bug_when <= end_date,
+            bugzilla_models.BugsActivity.fieldid == 50
+        )
+    ) \
+        .group_by(bugzilla_models.Bug.product_id).all()
 
     projects = [{'id': id, 'name': name, 'hours': hours} for activity, id, name, hours in actions]
 
@@ -100,39 +114,47 @@ def details(bugzilla_db, settings_db):
     month = datetime.datetime.strptime(data.get('startDate'), fmt)
     period = data.get('period')
     start_date = {
-            'month': month,
-            'year': month.replace(month=1)
-        }.get(period)
+        'month': month,
+        'year': month.replace(month=1)
+    }.get(period)
     end_date = {
-            'month': month.replace(day=monthrange(month.year, month.month)[1]),
-            'year': month.replace(day=monthrange(month.year, 12)[1], month=12)
-        }.get(period)
+        'month': month.replace(day=monthrange(month.year, month.month)[1]),
+        'year': month.replace(day=monthrange(month.year, 12)[1], month=12)
+    }.get(period)
     group_func = {
-            'month': 'day',
-            'year': 'month'
-        }.get(period)
+        'month': 'day',
+        'year': 'month'
+    }.get(period)
     periods_list = {
-            'month': range(1, monthrange(month.year, month.month)[1]+1),
-            'year': range(1, 13)
-        }.get(period)
+        'month': range(1, monthrange(month.year, month.month)[1] + 1),
+        'year': range(1, 13)
+    }.get(period)
 
     project_id = data.get('projectID')
 
-    actions = bugzilla_db.query(bugz_m.BugsActivity, getattr(func, group_func)(bugz_m.BugsActivity.bug_when),
-                                func.sum(bugz_m.BugsActivity.added)) \
-        .join(bugz_m.BugsActivity.bug).options(joinedload('bug')).join(bugz_m.Bug.product) \
-        .filter(bugz_m.Bug.product_id == project_id) \
-        .filter(bugz_m.BugsActivity.bug_when >= start_date).filter(bugz_m.BugsActivity.bug_when <= end_date) \
-        .filter(bugz_m.BugsActivity.fieldid == 50).group_by(getattr(func, group_func)(bugz_m.BugsActivity.bug_when)).all()
+    fieldid = bugzilla_models.Fielddef.query.filter(bugzilla_models.Fielddef.name == 'work_time').first().id
+
+    actions = bugzilla_db.query(bugzilla_models.BugsActivity,
+                                getattr(func, group_func)(bugzilla_models.BugsActivity.bug_when),
+                                func.sum(bugzilla_models.BugsActivity.added)) \
+        .join(bugzilla_models.BugsActivity.bug).options(joinedload('bug')).join(bugzilla_models.Bug.product) \
+        .filter(
+        and_(
+            bugzilla_models.Bug.product_id == project_id,
+            bugzilla_models.BugsActivity.bug_when >= start_date,
+            bugzilla_models.BugsActivity.bug_when <= end_date,
+            bugzilla_models.BugsActivity.fieldid == fieldid
+        )
+    ) \
+        .group_by(getattr(func, group_func)(bugzilla_models.BugsActivity.bug_when)).all()
 
     result = [{'label': calendar.month_name[item] if period == 'year' else item,
-            'data': sum([hours for action, period, hours in actions if period == item])} for item in periods_list]
+               'data': sum([hours for action, period, hours in actions if period == item])} for item in periods_list]
     return jsonify(result)
 
 
 # Create customized model view class
 class ProtectModelView(ModelView):
-
     def is_accessible(self):
         return current_user.is_authenticated
 
@@ -158,7 +180,6 @@ class UserModelView(ProtectModelView):
 
 # Create customized index view class that handles login & registration
 class MyAdminIndexView(AdminIndexView):
-
     @expose('/')
     def index(self):
         if not current_user.is_authenticated:
@@ -188,20 +209,18 @@ class MyAdminIndexView(AdminIndexView):
 @with_db
 @init_db
 def init_admin_login(bugzilla_db, settings_db):
-
     login_manager = LoginManager()
     login_manager.init_app(app)
 
     @login_manager.user_loader
     def load_user(user_id):
-        return settings_db.query(sett_m.User).get(user_id)
+        return settings_db.query(settings_models.User).get(user_id)
 
     admin = Admin(app, name='Redwerk Bugzilla Stats', index_view=MyAdminIndexView(),
                   template_mode='bootstrap3', base_template='admin/custom_base.html')
 
-    admin.add_view(UserModelView(sett_m.User, settings_db))
-    admin.add_view(ProjectModelView(sett_m.Project, settings_db))
+    admin.add_view(UserModelView(settings_models.User, settings_db))
+    admin.add_view(ProjectModelView(settings_models.Project, settings_db))
 
 
 init_admin_login()
-

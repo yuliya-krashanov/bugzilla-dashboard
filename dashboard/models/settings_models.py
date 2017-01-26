@@ -1,8 +1,7 @@
 # coding: utf-8
-from sqlalchemy import Column, ForeignKey, Integer, String, Table, Boolean
-from sqlalchemy.dialects.mysql.base import LONGBLOB
-from sqlalchemy.orm import relationship, backref
-from dashboard.database import SettingsBase as Base, settings_engine
+from sqlalchemy import Column, ForeignKey, Integer, String, Boolean
+from sqlalchemy.orm import relationship
+from dashboard.database import SettingsBase as Base
 
 metadata = Base.metadata
 
@@ -37,7 +36,6 @@ class State(Base):
         return self.name
 
 
-
 class Project(Base):
     __tablename__ = 'projects'
 
@@ -47,7 +45,7 @@ class Project(Base):
     country_id = Column(Integer, ForeignKey('countries.id', ondelete=u'CASCADE', onupdate=u'CASCADE'),
                         nullable=True, index=True)
     state_id = Column(Integer, ForeignKey('states.id', ondelete=u'CASCADE', onupdate=u'CASCADE'),
-                        nullable=True, index=True)
+                      nullable=True, index=True)
     enable = Column(Boolean, nullable=False, default=True)
     country = relationship('Country', back_populates="projects")
     state = relationship('State', back_populates="projects")
@@ -79,4 +77,3 @@ class User(Base):
     # Required for administrative interface
     def __str__(self):
         return self.login
-

@@ -39,40 +39,45 @@ def with_db(f):
             settings_db.close()
     return new_f
 
+
 @with_db
 def init_db(bugzilla_db, settings_db, f):
     @wraps(f)
     def decorated_fun(*args, **kwargs):
-        import dashboard.models.bugzilla_models as zilla_m, dashboard.models.settings_models as sett_m
+        import dashboard.models.bugzilla_models as bugzilla_models
+        import dashboard.models.settings_models as settings_models
 
         SettingsBase.metadata.create_all(bind=settings_engine)
 
-        projects_zilla = [(p.id, p.name) for p in zilla_m.Product.query.filter(zilla_m.Product.isactive == 1).all()]
+        projects_zilla = [(p.id, p.name) for p in
+                          bugzilla_models.Product.query.filter(bugzilla_models.Product.isactive == 1).all()]
 
-        projects_sett = [{'id': p.id, 'project_id': p.bz_project_id} for p in sett_m.Project.query.all()]
+        projects_sett = [{'id': p.id, 'project_id': p.bz_project_id} for p in settings_models.Project.query.all()]
 
-        new_projects = [sett_m.Project(bz_project_id=proj_id, name=name) for proj_id, name in projects_zilla
+        new_projects = [settings_models.Project(bz_project_id=proj_id, name=name) for proj_id, name in projects_zilla
                         if all(pr_s.get('project_id', None) != proj_id for pr_s in projects_sett)]
 
         if new_projects:
             settings_db.add_all(new_projects)
             settings_db.commit()
 
-        if not settings_db.query(sett_m.Country).count():
+        if not settings_db.query(settings_models.Country).count():
             with open(os.path.join(app.config.get('CONFIG_DIR', None), 'countries.json')) as countries_json_data:
                 countries_list = json.load(countries_json_data)
 
-            countries = map((lambda country: sett_m.Country(name=country.get('name', None), code=country.get('code', None))),
+            countries = map((lambda country: settings_models.Country(name=country.get('name', None),
+                                                                     code=country.get('code', None))),
                             countries_list)
             settings_db.add_all(countries)
             settings_db.commit()
 
-        if not settings_db.query(sett_m.State).count():
+        if not settings_db.query(settings_models.State).count():
             with open(os.path.join(app.config.get('CONFIG_DIR', None), 'states.json')) as states_json_data:
                 states_list = json.load(states_json_data)
 
-            us_item = settings_db.query(sett_m.Country).filter_by(name='United States').first()
-            states = map((lambda state: sett_m.State(name=state.get('name', None), code=state.get('code', None))),
+            us_item = settings_db.query(settings_models.Country).filter_by(name='United States').first()
+            states = map((lambda state: settings_models.State(name=state.get('name', None),
+                                                              code=state.get('code', None))),
                          states_list)
             us_item.states.extend(states)
             settings_db.commit()
