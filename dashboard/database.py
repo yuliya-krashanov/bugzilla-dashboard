@@ -1,22 +1,34 @@
-import json
-import os
 from functools import wraps
-
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, and_
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import scoped_session, sessionmaker
+from sqlalchemy.orm import scoped_session, sessionmaker, Query, joinedload
+import pycountry
 
 from . import app
 
+
+class BugzillaCustomQuery(Query):
+
+    def actions(self, start_date, end_date, fieldid):
+
+        import dashboard.models.bugzilla_models as bugzilla_models
+
+        return self.join(bugzilla_models.BugsActivity.bug).options(joinedload('bug')).join(bugzilla_models.Bug.product)\
+                .filter(
+                and_(
+                    bugzilla_models.BugsActivity.bug_when >= start_date,
+                    bugzilla_models.BugsActivity.bug_when <= end_date,
+                    bugzilla_models.BugsActivity.fieldid == fieldid
+                ))
+
+
 bugzilla_engine = create_engine(app.config.get('BUGZILLA_DATABASE_URI', None), convert_unicode=True)
-bugzilla_db_sm = scoped_session(sessionmaker(autocommit=False,
-                                         autoflush=False,
-                                         bind=bugzilla_engine))
+bugzilla_db_sm = scoped_session(sessionmaker(autocommit=False, autoflush=False,
+                                         bind=bugzilla_engine, query_cls=BugzillaCustomQuery))
+
 
 settings_engine = create_engine(app.config.get('SETTINGS_DATABASE_URI', None), convert_unicode=True)
-settings_db_sm = scoped_session(sessionmaker(autocommit=False,
-                                         autoflush=False,
-                                         bind=settings_engine))
+settings_db_sm = scoped_session(sessionmaker(autocommit=False, autoflush=False, bind=settings_engine))
 
 
 BugzillaBase = declarative_base(bind=bugzilla_engine)
@@ -62,26 +74,26 @@ def init_db(bugzilla_db, settings_db, f):
             settings_db.commit()
 
         if not settings_db.query(settings_models.Country).count():
-            with open(os.path.join(app.config.get('CONFIG_DIR', None), 'countries.json')) as countries_json_data:
-                countries_list = json.load(countries_json_data)
-
-            countries = map((lambda country: settings_models.Country(name=country.get('name', None),
-                                                                     code=country.get('code', None))),
-                            countries_list)
+            countries = map((lambda country: settings_models.Country(name=country.name,
+                                                                     code=country.alpha_2)),
+                            list(pycountry.countries))
             settings_db.add_all(countries)
             settings_db.commit()
 
         if not settings_db.query(settings_models.State).count():
-            with open(os.path.join(app.config.get('CONFIG_DIR', None), 'states.json')) as states_json_data:
-                states_list = json.load(states_json_data)
-
-            us_item = settings_db.query(settings_models.Country).filter_by(name='United States').first()
-            states = map((lambda state: settings_models.State(name=state.get('name', None),
-                                                              code=state.get('code', None))),
-                         states_list)
+            us_item = settings_db.query(settings_models.Country).filter_by(code='US').first()
+            states = map((lambda state: settings_models.State(name=state.name,
+                                                              code=state.code)),
+                         list(pycountry.subdivisions.get(country_code='US')))
             us_item.states.extend(states)
+            settings_db.commit()
+
+        if not settings_db.query(settings_models.User).count():
+            settings_db.add(settings_models.User(login='admin', password='1111'))
             settings_db.commit()
 
         return f(*args, **kwargs)
 
     return decorated_fun
+
+

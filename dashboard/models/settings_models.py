@@ -1,4 +1,4 @@
-# coding: utf-8
+from werkzeug.security import generate_password_hash
 from sqlalchemy import Column, ForeignKey, Integer, String, Boolean
 from sqlalchemy.orm import relationship
 from dashboard.database import SettingsBase as Base
@@ -25,7 +25,7 @@ class State(Base):
 
     id = Column(Integer, primary_key=True)
     name = Column(String(length=50), nullable=False)
-    code = Column(String(length=2))
+    code = Column(String(length=8))
     country_id = Column(Integer, ForeignKey('countries.id', ondelete=u'CASCADE', onupdate=u'CASCADE'),
                         nullable=False, index=True)
 
@@ -57,6 +57,10 @@ class Project(Base):
 class User(Base):
     __tablename__ = 'users'
 
+    def __init__(self, **kwargs):
+        super(User, self).__init__(**kwargs)
+        self.set_password(kwargs.get('password'))
+
     id = Column(Integer, primary_key=True)
     login = Column(String(length=50), nullable=False)
     password = Column(String(length=200), nullable=False)
@@ -73,6 +77,9 @@ class User(Base):
 
     def get_id(self):
         return self.id
+
+    def set_password(self, password):
+        self.password = generate_password_hash(password)
 
     # Required for administrative interface
     def __str__(self):

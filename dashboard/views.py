@@ -6,10 +6,9 @@ from flask import redirect, url_for
 from flask import render_template, jsonify, request
 from flask_admin import Admin, AdminIndexView, helpers, expose
 from flask_admin.contrib.sqla import ModelView
-from flask_login import LoginManager, current_user, login_user, logout_user
+from flask_login import LoginManager, current_user, login_user, logout_user, login_required
 from wtforms import PasswordField
 from sqlalchemy import func, and_
-from sqlalchemy.orm import joinedload
 
 import dashboard.forms as forms
 import dashboard.models.settings_models as settings_models
@@ -82,16 +81,10 @@ def get_hours_by_place(bugzilla_db, settings_db, projects_ids, place_model):
     actions = bugzilla_db.query(bugzilla_models.BugsActivity, bugzilla_models.Bug.product_id,
                                 bugzilla_models.Product.name,
                                 func.sum(bugzilla_models.BugsActivity.added)) \
-        .join(bugzilla_models.BugsActivity.bug).options(joinedload('bug')).join(bugzilla_models.Bug.product) \
-        .filter(
-        and_(
-            bugzilla_models.Bug.product_id.in_(projects_ids),
-            bugzilla_models.BugsActivity.bug_when >= start_date,
-            bugzilla_models.BugsActivity.bug_when <= end_date,
-            bugzilla_models.BugsActivity.fieldid == 50
-        )
-    ) \
+        .actions(start_date, end_date, 50)\
+        .filter(bugzilla_models.Bug.product_id.in_(projects_ids)) \
         .group_by(bugzilla_models.Bug.product_id).all()
+
 
     projects = [{'id': id, 'name': name, 'hours': hours} for activity, id, name, hours in actions]
 
@@ -137,15 +130,8 @@ def details(bugzilla_db, settings_db):
     actions = bugzilla_db.query(bugzilla_models.BugsActivity,
                                 getattr(func, group_func)(bugzilla_models.BugsActivity.bug_when),
                                 func.sum(bugzilla_models.BugsActivity.added)) \
-        .join(bugzilla_models.BugsActivity.bug).options(joinedload('bug')).join(bugzilla_models.Bug.product) \
-        .filter(
-        and_(
-            bugzilla_models.Bug.product_id == project_id,
-            bugzilla_models.BugsActivity.bug_when >= start_date,
-            bugzilla_models.BugsActivity.bug_when <= end_date,
-            bugzilla_models.BugsActivity.fieldid == fieldid
-        )
-    ) \
+        .actions(start_date, end_date, fieldid) \
+        .filter(bugzilla_models.Bug.product_id == project_id) \
         .group_by(getattr(func, group_func)(bugzilla_models.BugsActivity.bug_when)).all()
 
     result = [{'label': calendar.month_name[item] if period == 'year' else item,
@@ -177,6 +163,15 @@ class UserModelView(ProtectModelView):
         'password': PasswordField('Password')
     }
 
+    def on_form_prefill(self, form, id):
+        form.password.data = ''
+
+    def on_model_change(self, form, User, is_created):
+        if form.password.data:
+            User.set_password(form.password.data)
+        else:
+            del form.password
+
 
 # Create customized index view class that handles login & registration
 class MyAdminIndexView(AdminIndexView):
@@ -200,6 +195,7 @@ class MyAdminIndexView(AdminIndexView):
         return super(MyAdminIndexView, self).index()
 
     @expose('/logout/')
+    @login_required
     def logout_view(self):
         logout_user()
         return redirect(url_for('.index'))
