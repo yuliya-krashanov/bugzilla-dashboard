@@ -1,5 +1,5 @@
 from wtforms import form, fields, validators
-from werkzeug.security import generate_password_hash, check_password_hash
+from werkzeug.security import check_password_hash
 import dashboard.models.settings_models as sett_m
 from dashboard.database import with_db
 

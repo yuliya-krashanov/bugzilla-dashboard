@@ -14,7 +14,7 @@ def numCPUs():
 port = os.environ.get('GUNICORN_PORT', 9003)
 
 bind = "127.0.0.1:%s" % port
-workers = 3
+workers = 4
 worker_class = "gevent"
 max_requests = 1000
 daemon = True

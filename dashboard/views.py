@@ -66,8 +66,8 @@ def states():
 def get_hours_by_place(bugzilla_db, settings_db, projects_ids, place_model):
 
     query_places = settings_db.query(func.group_concat(settings_models.Project.bz_project_id.distinct()), place_model)\
-                   .join(place_model).filter(settings_models.Project.enable == 1)\
-                   .group_by(getattr(settings_models.Project, place_model().__class__.__name__.lower() + '_id')).all()
+                  .join(place_model).filter(settings_models.Project.enable == 1)\
+                  .group_by(getattr(settings_models.Project, place_model().__class__.__name__.lower() + '_id')).all()
 
     places = [{'id': place.id, 'name': place.name, 'projects': [int(p) for p in projects.split(',')]}
               for projects, place in query_places]
@@ -77,14 +77,14 @@ def get_hours_by_place(bugzilla_db, settings_db, projects_ids, place_model):
     start_date = datetime.datetime.strptime(dates.get('startDate'), fmt)
     end_date = datetime.datetime.strptime(dates.get('endDate'), fmt)
 
-    # TODO: delete hardcoded fieldid
+    fieldid = bugzilla_models.Fielddef.query.filter(bugzilla_models.Fielddef.name == 'work_time').first().id
+
     actions = bugzilla_db.query(bugzilla_models.BugsActivity, bugzilla_models.Bug.product_id,
                                 bugzilla_models.Product.name,
                                 func.sum(bugzilla_models.BugsActivity.added)) \
-        .actions(start_date, end_date, 50)\
+        .actions(start_date, end_date, fieldid)\
         .filter(bugzilla_models.Bug.product_id.in_(projects_ids)) \
         .group_by(bugzilla_models.Bug.product_id).all()
-
 
     projects = [{'id': id, 'name': name, 'hours': hours} for activity, id, name, hours in actions]
 

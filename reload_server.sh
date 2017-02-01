@@ -21,6 +21,6 @@ then
 	done
 fi
 echo "starting gunicorn"
-gunicorn -c gunicorn_conf.py run
+gunicorn -c gunicorn_conf.py run:app
 
 echo "started"

@@ -8,28 +8,24 @@ from . import app
 
 
 class BugzillaCustomQuery(Query):
-
     def actions(self, start_date, end_date, fieldid):
-
         import dashboard.models.bugzilla_models as bugzilla_models
 
-        return self.join(bugzilla_models.BugsActivity.bug).options(joinedload('bug')).join(bugzilla_models.Bug.product)\
-                .filter(
-                and_(
-                    bugzilla_models.BugsActivity.bug_when >= start_date,
-                    bugzilla_models.BugsActivity.bug_when <= end_date,
-                    bugzilla_models.BugsActivity.fieldid == fieldid
-                ))
+        return self.join(bugzilla_models.BugsActivity.bug).options(joinedload('bug')).join(bugzilla_models.Bug.product) \
+            .filter(
+            and_(
+                bugzilla_models.BugsActivity.bug_when >= start_date,
+                bugzilla_models.BugsActivity.bug_when <= end_date,
+                bugzilla_models.BugsActivity.fieldid == fieldid
+            ))
 
 
 bugzilla_engine = create_engine(app.config.get('BUGZILLA_DATABASE_URI', None), convert_unicode=True)
 bugzilla_db_sm = scoped_session(sessionmaker(autocommit=False, autoflush=False,
-                                         bind=bugzilla_engine, query_cls=BugzillaCustomQuery))
-
+                                             bind=bugzilla_engine, query_cls=BugzillaCustomQuery))
 
 settings_engine = create_engine(app.config.get('SETTINGS_DATABASE_URI', None), convert_unicode=True)
 settings_db_sm = scoped_session(sessionmaker(autocommit=False, autoflush=False, bind=settings_engine))
-
 
 BugzillaBase = declarative_base(bind=bugzilla_engine)
 BugzillaBase.query = bugzilla_db_sm.query_property()
@@ -49,6 +45,7 @@ def with_db(f):
         finally:
             bugzilla_db.close()
             settings_db.close()
+
     return new_f
 
 
@@ -95,5 +92,3 @@ def init_db(bugzilla_db, settings_db, f):
         return f(*args, **kwargs)
 
     return decorated_fun
-
-
