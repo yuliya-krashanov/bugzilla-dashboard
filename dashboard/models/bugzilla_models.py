@@ -1,7 +1,11 @@
 # coding: utf-8
-from sqlalchemy import Column, DateTime, ForeignKey, Index, Integer, Numeric, SmallInteger, String, Table, text
+from sqlalchemy import (
+    Column, DateTime, ForeignKey, Index, Integer, Numeric, SmallInteger,
+    String, Table, text,
+)
 from sqlalchemy.dialects.mysql.base import LONGBLOB
 from sqlalchemy.orm import relationship
+
 from dashboard.database import BugzillaBase as Base
 
 metadata = Base.metadata

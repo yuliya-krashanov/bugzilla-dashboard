@@ -3,6 +3,7 @@ DEBUG = False
 
 # Define the application directory
 import os
+
 CONFIG_DIR = os.path.abspath(os.path.dirname(__file__))
 
 # Define the database - we are working with

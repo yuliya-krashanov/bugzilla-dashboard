@@ -13,6 +13,11 @@
 
 
 ## Code style and contribution guide
+- Install the editorconfig plugin for your code editor.
+- Do not copypaste, do not hack, always look for easiest solutions.
+- Write tests for your code.
+- For every task create a branch from current master, when ready create a merge request back to master.
+- Prefer small commits and branches.
 
 
 ## Requirements

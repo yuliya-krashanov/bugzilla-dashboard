@@ -8,9 +8,6 @@ def numCPUs():
         raise RuntimeError("No sysconf detected.")
     return os.sysconf("SC_NPROCESSORS_ONLN")
 
-
-# bind = "unix:/tmp/gunicorn.sock"
-
 port = os.environ.get('GUNICORN_PORT', 9003)
 
 bind = "127.0.0.1:%s" % port

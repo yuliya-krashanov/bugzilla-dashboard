@@ -2,17 +2,18 @@ import calendar
 import datetime
 from calendar import monthrange
 
-from flask import redirect, url_for
-from flask import render_template, jsonify, request
-from flask_admin import Admin, AdminIndexView, helpers, expose
+from flask import jsonify, redirect, render_template, request, url_for
+from flask_admin import Admin, AdminIndexView, expose, helpers
 from flask_admin.contrib.sqla import ModelView
-from flask_login import LoginManager, current_user, login_user, logout_user, login_required
+from flask_login import (
+    LoginManager, current_user, login_required, login_user, logout_user,
+)
+from sqlalchemy import and_, func
 from wtforms import PasswordField
-from sqlalchemy import func, and_
 
 import dashboard.forms as forms
-import dashboard.models.settings_models as settings_models
 import dashboard.models.bugzilla_models as bugzilla_models
+import dashboard.models.settings_models as settings_models
 from dashboard import app
 from dashboard.database import init_db, with_db
 
