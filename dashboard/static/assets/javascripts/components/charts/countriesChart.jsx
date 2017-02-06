@@ -51,7 +51,12 @@ export default class CountriesChart extends React.Component {
                         <div className="chart__header">
                             <h3 className="chart__title">States</h3>
                             <span className="chart__button chart__button--back" onClick={this.handleBackToCountries.bind(this)}>
-                                <i className="fa fa-angle-left"></i> Back
+                                <svg version="1.1" x="0px" y="0px"  viewBox="0 0 201.5 201.5">
+                                    <g>
+                                        <path  d="M155.2,193.2l-8.3,8.3L46.2,100.7L147,0l8.3,8.3l-92.5,92.5L155.2,193.2z"/>
+                                    </g>
+                                </svg>
+                                 Back
                             </span>
                         </div>
                         <div className="chart__container">

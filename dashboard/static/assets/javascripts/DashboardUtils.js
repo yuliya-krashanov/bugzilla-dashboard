@@ -29,7 +29,7 @@ export const PieChartOptions = {
                     fontSize: 13,
                     padding: 20,
                     boxWidth: 13,
-                   // fontFamily: ''
+                    fontFamily: 'Lato'
                 }
             },
             tooltips: {
@@ -38,7 +38,8 @@ export const PieChartOptions = {
                 titleFontColor: '#333',
                 titleFontStyle: 'normal',
                 titleMarginBottom: 12,
-                //titleFontFamily: ''
+                titleFontFamily: 'Lato',
+                bodyFontFamily: 'Lato',
                 bodyFontColor: '#666',
                 bodyFontSize: 14,
                 cornerRadius: 0,

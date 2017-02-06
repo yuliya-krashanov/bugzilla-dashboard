@@ -91,7 +91,12 @@ export default class DetailsChart extends React.Component {
                           <h5 className="chart__subtitle">{this.state.period} statistics of working hours</h5>
                       </div>
                       <span className="chart__button chart__button--close" onClick={this.handleClose.bind(this)}>
-                          <i className="fa fa-times"></i>
+                          <svg version="1.1" x="0px" y="0px" viewBox="0 0 224.5 224.5" >
+                            <g>
+                                <polygon points="224.5,7 217.5,0 112.3,105.3 7,0 0,7 105.3,112.3 0,217.5 7,224.5 112.3,119.2 217.5,224.5
+                                    224.5,217.5 119.2,112.3 	"/>
+                            </g>
+                          </svg>
                       </span>
                   </div>
 
@@ -105,6 +110,7 @@ export default class DetailsChart extends React.Component {
                             backgroundColor: 'transparent',
                             bodyFontColor: '#DD3333',
                             bodyFontSize: 25,
+                            bodyFontFamily: 'Lato',
                             cornerRadius: 0,
                             displayColors: false,
                             callbacks: {
