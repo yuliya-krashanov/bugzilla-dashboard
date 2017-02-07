@@ -71,12 +71,11 @@ export default class DetailsChart extends React.Component {
               labels:  this.state.details.labels,
               datasets: [
                 {
-                  label: '',
-                  backgroundColor: 'rgba(255,99,132,0.2)',
-                  borderColor: 'rgba(255,99,132,1)',
-                  borderWidth: 1,
-                  hoverBackgroundColor: 'rgba(255,99,132,0.4)',
-                  hoverBorderColor: 'rgba(255,99,132,1)',
+                  backgroundColor: '#F5AEAC',
+                  borderColor: '#F5AEAC',
+                  borderWidth: 0,
+                  hoverBackgroundColor: '#DD3333',
+                  hoverBorderColor: '#DD3333',
                   data: this.state.details.data
                 }
               ]
@@ -85,21 +84,54 @@ export default class DetailsChart extends React.Component {
             this.countStatistics();
 
             return <div className="chart chart--details">
+                <div className="chart__wrapper">
                   <div className="chart__header">
                       <div className="chart__titles">
                           <h3 className="chart__title">{this.state.name}</h3>
                           <h5 className="chart__subtitle">{this.state.period} statistics of working hours</h5>
                       </div>
-                      <button className="chart__button chart__button--close" onClick={this.handleClose.bind(this)}>x</button>
-
+                      <div className="chart__button chart__button--close" onClick={this.handleClose.bind(this)}>
+                           <img src={"static/public/images/cross-out.svg"} alt="close" />
+                      </div>
                   </div>
 
                   <Bar data={data}
                       options={{
                         maintainAspectRatio: true,
-                          legend: {
+                        legend: {
                             position: 'none'
-                          }
+                        },
+                        tooltips: {
+                            backgroundColor: 'transparent',
+                            bodyFontColor: '#DD3333',
+                            bodyFontSize: 25,
+                            bodyFontFamily: 'Lato',
+                            cornerRadius: 0,
+                            displayColors: false,
+                            callbacks: {
+                                label: (tooltip, data) => {
+                                    return `${data.datasets[0].data[tooltip.index]}h`;
+                                },
+                                title: (tooltip, data) => {
+                                    return '';
+                                },
+                            }
+                        },
+                        scales: {
+                            yAxes: [
+                                {
+                                    display: false
+                                }
+                            ],
+                            xAxes: [
+                                {
+                                    gridLines: {
+                                        display: false
+                                    },
+                                    categoryPercentage: 0.5
+                                }
+                            ],
+                        }
                       }}
                   />
 
@@ -114,6 +146,7 @@ export default class DetailsChart extends React.Component {
                           <div className="stats__item">Avg hours a day<span> {this.statistics.avg}</span></div>
                       </div>
                   </div>
+                </div>
             </div>;
         }
         else return null;
