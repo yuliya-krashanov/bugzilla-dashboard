@@ -50,14 +50,10 @@ export default class CountriesChart extends React.Component {
                     <div className="chart__wrapper">
                         <div className="chart__header">
                             <h3 className="chart__title">States</h3>
-                            <span className="chart__button chart__button--back" onClick={this.handleBackToCountries.bind(this)}>
-                                <svg version="1.1" x="0px" y="0px"  viewBox="0 0 201.5 201.5">
-                                    <g>
-                                        <path  d="M155.2,193.2l-8.3,8.3L46.2,100.7L147,0l8.3,8.3l-92.5,92.5L155.2,193.2z"/>
-                                    </g>
-                                </svg>
+                            <div className="chart__button chart__button--back" onClick={this.handleBackToCountries.bind(this)}>
+                                <img src={"static/public/images/downwards-pointer.svg"} alt="back"/>
                                  Back
-                            </span>
+                            </div>
                         </div>
                         <div className="chart__container">
                              <Doughnut data={new chartSettings(this.state.statesData.labels, this.state.statesData.data)}
