@@ -47,9 +47,12 @@ class Project(Base):
                         nullable=True, index=True)
     state_id = Column(Integer, ForeignKey('states.id', ondelete=u'CASCADE', onupdate=u'CASCADE'),
                       nullable=True, index=True)
+    bg_hours = Column(Boolean, nullable=True, default=True)
+    average_hours = Column(Integer, nullable=True, default=0)
     enable = Column(Boolean, nullable=False, default=True)
     country = relationship('Country', back_populates="projects")
     state = relationship('State', back_populates="projects")
+
 
     def __str__(self):
         return self.name

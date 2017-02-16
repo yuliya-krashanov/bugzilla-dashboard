@@ -47,13 +47,21 @@ export default class DetailsChart extends React.Component {
      }
 
      countStatistics(){
-         this.statistics = {
-             min: Math.min.apply(Math, this.state.details.data),
-             max: Math.max.apply(Math, this.state.details.data),
-             avg: Math.round(this.state.details.data.reduce(function (a, b) {
-                 return a + b;
-             }) / this.state.details.data.length)
-         };
+         let positiveData = this.state.details.data.filter(item => {return item > 0;});
+         if (positiveData.length)
+             this.statistics = {
+                 min: Math.min.apply(Math, positiveData),
+                 max: Math.max.apply(Math, positiveData),
+                 avg: Math.round(positiveData.reduce(function (a, b) {
+                     return a + b;
+                 }) / positiveData.length)
+             };
+         else
+             this.statistics = {
+                min: 0,
+                max: 0,
+                avg: 0
+             };
      }
 
      handleDecreasePeriod() {
