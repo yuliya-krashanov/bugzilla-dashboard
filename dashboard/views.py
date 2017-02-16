@@ -154,7 +154,7 @@ class ProjectModelView(ProtectModelView):
     can_create = False
     column_display_pk = False
     column_hide_backrefs = False
-    column_list = ('id', 'name', 'enable', 'country', 'state')
+    column_list = ('id', 'name', 'enable', 'country', 'state', 'average_hours')
     form_excluded_columns = ('bz_project_id')
 
 
