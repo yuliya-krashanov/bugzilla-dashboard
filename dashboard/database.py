@@ -5,20 +5,21 @@ from sqlalchemy import and_, create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import Query, joinedload, scoped_session, sessionmaker
 
+import dashboard.models.bugzilla_models as bugzilla_models
+import dashboard.models.settings_models as settings_models
 from . import app
 
 
 class BugzillaCustomQuery(Query):
     def actions(self, start_date, end_date, fieldid):
-        import dashboard.models.bugzilla_models as bugzilla_models
-
-        return self.join(bugzilla_models.BugsActivity.bug).options(joinedload('bug')).join(bugzilla_models.Bug.product) \
-            .filter(
-            and_(
-                bugzilla_models.BugsActivity.bug_when >= start_date,
-                bugzilla_models.BugsActivity.bug_when <= end_date,
-                bugzilla_models.BugsActivity.fieldid == fieldid
-            ))
+        return self.join(bugzilla_models.BugsActivity.bug).options(joinedload('bug')).join(
+            bugzilla_models.Bug.product).filter(
+                and_(
+                    bugzilla_models.BugsActivity.bug_when >= start_date,
+                    bugzilla_models.BugsActivity.bug_when <= end_date,
+                    bugzilla_models.BugsActivity.fieldid == fieldid
+                )
+            )
 
 
 bugzilla_engine = create_engine(app.config.get('BUGZILLA_DATABASE_URI', None), convert_unicode=True)
@@ -54,9 +55,6 @@ def with_db(f):
 def init_db(bugzilla_db, settings_db, f):
     @wraps(f)
     def decorated_fun(*args, **kwargs):
-        import dashboard.models.bugzilla_models as bugzilla_models
-        import dashboard.models.settings_models as settings_models
-
         SettingsBase.metadata.create_all(bind=settings_engine)
 
         projects_zilla = [(p.id, p.name) for p in

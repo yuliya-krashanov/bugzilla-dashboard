@@ -53,7 +53,6 @@ class Project(Base):
     country = relationship('Country', back_populates="projects")
     state = relationship('State', back_populates="projects")
 
-
     def __str__(self):
         return self.name
 
