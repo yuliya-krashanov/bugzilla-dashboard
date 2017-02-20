@@ -7,8 +7,8 @@ DEBUG = False
 CONFIG_DIR = os.path.abspath(os.path.dirname(__file__))
 
 # Define the database - we are working with
-BUGZILLA_DATABASE_URI = ''
-SETTINGS_DATABASE_URI = ''
+BUGZILLA_DATABASE_URI = 'mysql+oursql://bugzilla:RyhotfotadHuirf@localhost/bugzilla'
+SETTINGS_DATABASE_URI = 'mysql+oursql://sd:Jt71EVDiOG3KUzyg@localhost/stats_dashboard'
 
 # Enable protection agains *Cross-site Request Forgery (CSRF)*
 CSRF_ENABLED = True
