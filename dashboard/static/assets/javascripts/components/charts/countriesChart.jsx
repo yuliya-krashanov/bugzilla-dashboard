@@ -8,6 +8,8 @@ export default class CountriesChart extends React.Component {
      constructor(props){
         super(props);
 
+        this.redrawCountry = true;
+
         this.state = {
             statesActive: false,
             statesData: ProjectStore.getStatesData()
@@ -33,6 +35,11 @@ export default class CountriesChart extends React.Component {
          });
      }
 
+     componentWillUpdate(nextProps, nextState){
+        if (nextProps.data == this.props.data)
+            this.redrawCountry = false;
+     }
+
      render() {
 
         return <div className={"chart " + (this.state.statesData.labels.length ? "chart--two " : null)
@@ -43,7 +50,7 @@ export default class CountriesChart extends React.Component {
                     </div>
                     <div className="chart__container">
                         <Doughnut data={new chartSettings(this.props.labels, this.props.data)} options={PieChartOptions}
-                                  onElementsClick={this.handleElementsClick.bind(this)} redraw={true} />
+                                  onElementsClick={this.handleElementsClick.bind(this)} redraw={this.redrawCountry} />
                     </div>
                 </div>
                 {this.state.statesData.labels.length ?

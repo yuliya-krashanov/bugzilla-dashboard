@@ -76,10 +76,17 @@ class DetailStore extends EventEmitter {
         return this.chartData;
     }
 
+    closeChart() {
+        this.emit("close");
+    }
+
     handleActions (action) {
         switch (action.type){
             case ActionTypes.SELECT_PROJECT:
                 this.changeProject(action.iterator);
+                break;
+            case ActionTypes.CHANGE_DATES:
+                this.closeChart();
                 break;
             case ActionTypes.CHANGE_PERIOD:
                 this.changePeriod(action.increase);

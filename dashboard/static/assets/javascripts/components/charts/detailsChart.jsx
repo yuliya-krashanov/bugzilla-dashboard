@@ -38,6 +38,10 @@ export default class DetailsChart extends React.Component {
                  period: this._periods[DetailStore.getCurrentPeriod()]
              })
          });
+
+         DetailStore.on("close", () => {
+             this.handleClose();
+         });
      }
 
      handleClose() {
