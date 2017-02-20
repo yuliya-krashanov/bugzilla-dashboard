@@ -66,9 +66,10 @@ def states():
 @with_db
 def get_hours_by_place(bugzilla_db, settings_db, projects_ids, place_model):
 
-    query_places = settings_db.query(func.group_concat(settings_models.Project.bz_project_id.distinct()), place_model)\
-                  .join(place_model).filter(settings_models.Project.enable == 1)\
-                  .group_by(getattr(settings_models.Project, place_model().__class__.__name__.lower() + '_id')).all()
+    query_places = settings_db.query(
+        func.group_concat(settings_models.Project.bz_project_id.distinct()), place_model)\
+        .join(place_model).filter(settings_models.Project.enable == 1)\
+        .group_by(getattr(settings_models.Project, place_model().__class__.__name__.lower() + '_id')).all()
 
     places = [{'id': place.id, 'name': place.name, 'projects': [int(p) for p in projects.split(',')]}
               for projects, place in query_places]
@@ -135,8 +136,11 @@ def details(bugzilla_db, settings_db):
         .filter(bugzilla_models.Bug.product_id == project_id) \
         .group_by(getattr(func, group_func)(bugzilla_models.BugsActivity.bug_when)).all()
 
-    result = [{'label': calendar.month_name[item] if period == 'year' else item,
-               'data': sum([hours for action, period, hours in actions if period == item])} for item in periods_list]
+    result = [
+        {'label': calendar.month_name[item] if period == 'year' else item,
+         'data': sum([hours for action, _period, hours in actions if _period == item])}
+        for item in periods_list
+    ]
     return jsonify(result)
 
 
