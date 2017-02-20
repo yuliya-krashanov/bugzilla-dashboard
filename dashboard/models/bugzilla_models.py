@@ -1,7 +1,11 @@
 # coding: utf-8
-from sqlalchemy import Column, DateTime, ForeignKey, Index, Integer, Numeric, SmallInteger, String, Table, text
+from sqlalchemy import (
+    Column, DateTime, ForeignKey, Index, Integer, Numeric, SmallInteger,
+    String, Table, text,
+)
 from sqlalchemy.dialects.mysql.base import LONGBLOB
 from sqlalchemy.orm import relationship
+
 from dashboard.database import BugzillaBase as Base
 
 metadata = Base.metadata
@@ -137,11 +141,11 @@ class Bug(Base):
     remaining_time = Column(Numeric(7, 2), nullable=False, server_default=text("'0.00'"))
     alias = Column(String(20), unique=True)
     deadline = Column(DateTime)
-    # cf_browser = Column(String(64), nullable=False, server_default=text("'---'"))
-    # cf_revision = Column(String(255), nullable=False, server_default=text("''"))
-    # cf_testingplanitems = Column(String(255), nullable=False, server_default=text("''"))
-    # cf_ext_tracker_status = Column(String(64), nullable=False, server_default=text("'---'"))
-    # cf_label = Column(String(255), nullable=False, server_default=text("''"))
+    cf_browser = Column(String(64), nullable=False, server_default=text("'---'"))
+    cf_revision = Column(String(255), nullable=False, server_default=text("''"))
+    cf_testingplanitems = Column(String(255), nullable=False, server_default=text("''"))
+    cf_ext_tracker_status = Column(String(64), nullable=False, server_default=text("'---'"))
+    cf_label = Column(String(255), nullable=False, server_default=text("''"))
 
     profile = relationship(u'Profile', primaryjoin='Bug.assigned_to == Profile.userid')
     component = relationship(u'Component')

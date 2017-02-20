@@ -1,8 +1,8 @@
-# coding: utf-8
-from sqlalchemy import Column, ForeignKey, Integer, String, Table, Boolean
-from sqlalchemy.dialects.mysql.base import LONGBLOB
-from sqlalchemy.orm import relationship, backref
-from dashboard.database import SettingsBase as Base, settings_engine
+from sqlalchemy import Boolean, Column, ForeignKey, Integer, String
+from sqlalchemy.orm import relationship
+from werkzeug.security import generate_password_hash
+
+from dashboard.database import SettingsBase as Base
 
 metadata = Base.metadata
 
@@ -26,7 +26,7 @@ class State(Base):
 
     id = Column(Integer, primary_key=True)
     name = Column(String(length=50), nullable=False)
-    code = Column(String(length=2))
+    code = Column(String(length=8))
     country_id = Column(Integer, ForeignKey('countries.id', ondelete=u'CASCADE', onupdate=u'CASCADE'),
                         nullable=False, index=True)
 
@@ -35,7 +35,6 @@ class State(Base):
 
     def __str__(self):
         return self.name
-
 
 
 class Project(Base):
@@ -47,7 +46,7 @@ class Project(Base):
     country_id = Column(Integer, ForeignKey('countries.id', ondelete=u'CASCADE', onupdate=u'CASCADE'),
                         nullable=True, index=True)
     state_id = Column(Integer, ForeignKey('states.id', ondelete=u'CASCADE', onupdate=u'CASCADE'),
-                        nullable=True, index=True)
+                      nullable=True, index=True)
     enable = Column(Boolean, nullable=False, default=True)
     country = relationship('Country', back_populates="projects")
     state = relationship('State', back_populates="projects")
@@ -58,6 +57,10 @@ class Project(Base):
 
 class User(Base):
     __tablename__ = 'users'
+
+    def __init__(self, **kwargs):
+        super(User, self).__init__(**kwargs)
+        self.set_password(kwargs.get('password'))
 
     id = Column(Integer, primary_key=True)
     login = Column(String(length=50), nullable=False)
@@ -76,7 +79,9 @@ class User(Base):
     def get_id(self):
         return self.id
 
+    def set_password(self, password):
+        self.password = generate_password_hash(password)
+
     # Required for administrative interface
     def __str__(self):
         return self.login
-
