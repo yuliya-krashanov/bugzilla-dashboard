@@ -39,15 +39,26 @@ module.exports = function (grunt) {
                   // includes files within path and its sub-directories
                   {
                       expand: true,
-                      cwd: 'assets/fonts/',
-                      src: [
-                          '**'
-                      ],
+                      cwd: 'node_modules/bootstrap-sass/assets/fonts/',
+                      src: '**',
                       dest: 'public/fonts/'
                   },
+                  {
+                      expand: true,
+                      cwd: 'assets/fonts/',
+                      src: '**',
+                      dest: 'public/fonts/'
+                  },
+                  {
+                      expand: true,
+                      cwd: 'assets/images/',
+                      src: '**',
+                      dest: 'public/images/'
+                  }
                 ],
             },
         },
+        clean: ['public/**'],
 		watch: {
 			js: {
 				files: ['assets/javascripts/**/*.js', 'assets/javascripts/**/*.jsx'],
@@ -66,9 +77,10 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-contrib-sass');
     grunt.loadNpmTasks('grunt-browserify');
     grunt.loadNpmTasks('grunt-contrib-copy');
+    grunt.loadNpmTasks('grunt-contrib-clean');
     grunt.loadNpmTasks('grunt-postcss');
 
 
-	grunt.registerTask('build', ['browserify', 'copy', 'sass', 'postcss']);
-	grunt.registerTask('default', ['browserify', 'copy', 'sass', 'postcss', 'watch']);
+	grunt.registerTask('build', ['clean', 'browserify', 'copy', 'sass', 'postcss']);
+	grunt.registerTask('default', ['clean', 'browserify', 'copy', 'sass', 'postcss', 'watch']);
 };

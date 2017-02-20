@@ -1,17 +1,12 @@
 import React from 'react';
 import DashboardActions from '../../DashboardActions.jsx'
 import {Doughnut} from 'react-chartjs-2';
+import {chartSettings, PieChartOptions} from '../../DashboardUtils.js';
 
 
 export default class ProjectsChart extends React.Component {
      constructor(props){
         super(props);
-
-        this._options =  {
-            legend: {
-                position: 'right'
-            }
-        };
      }
 
      handleElementsClick (elems){
@@ -20,42 +15,20 @@ export default class ProjectsChart extends React.Component {
 
      render() {
 
-         const data = {
-             labels: this.props.labels,
-             datasets: [{
-                 data: this.props.data,
-                 backgroundColor: [
-                     '#6CD0EA',
-                     '#FFDE7D',
-                     '#FE9ABE',
-                     '#4AAF5F',
-                     '#E63C3C'
-                 ],
-                 hoverBackgroundColor: [
-                     '#6CD0EA',
-                     '#FFDE7D',
-                     '#FE9ABE',
-                     '#4AAF5F',
-                     '#E63C3C'
-                 ]
-             }]
-         };
-
          return <div className="chart">
              <div className="chart__wrapper">
                  <div className="chart__header">
                      <h3 className="chart__title">Projects</h3>
                  </div>
                  <div className="chart__container">
-                     { data.labels.length ?
-                         <Doughnut data={data} redraw={true} options={this._options}
-                                   onElementsClick={this.handleElementsClick.bind(this)}/>
+                     {this.props.labels.length ?
+                         <Doughnut data={new chartSettings(this.props.labels, this.props.data)} redraw={true}
+                                   options={PieChartOptions} onElementsClick={this.handleElementsClick.bind(this)}/>
                          : 'No data for these dates!'}
                  </div>
              </div>
          </div>;
      }
-
 }
 
 ProjectsChart.defaultProps = {};

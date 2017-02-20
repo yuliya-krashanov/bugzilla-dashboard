@@ -3,10 +3,9 @@
 
 @import "variables";
 @import "mixins";
+@import "typography";
 
 @import "parts/common";
 @import "parts/header";
 
 @import "pages/dashboard";
-@import "pages/login";
-@import "pages/admin";
