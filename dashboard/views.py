@@ -9,7 +9,7 @@ from flask_login import (
     LoginManager, current_user, login_required, login_user, logout_user,
 )
 from sqlalchemy import and_, func
-from wtforms import PasswordField
+from wtforms import PasswordField, ValidationError
 
 import dashboard.forms as forms
 import dashboard.models.bugzilla_models as bugzilla_models
@@ -158,11 +158,20 @@ class ProjectModelView(ProtectModelView):
     form_excluded_columns = ('bz_project_id')
 
 
+def unique_login(form, field):
+    if settings_models.User.query.filter(settings_models.User.login == field.data).first():
+        raise ValidationError('Login already exists')
+
+
 class UserModelView(ProtectModelView):
     column_exclude_list = ('password')
     form_extra_fields = {
         'password': PasswordField('Password')
     }
+
+    form_args = dict(
+        login=dict(validators=[unique_login])
+    )
 
     def on_form_prefill(self, form, id):
         form.password.data = ''
@@ -198,6 +207,8 @@ class MyAdminIndexView(AdminIndexView):
     @expose('/logout/')
     @login_required
     def logout_view(self):
+        user = current_user
+        user.authenticated = False
         logout_user()
         return redirect(url_for('.index'))
 
