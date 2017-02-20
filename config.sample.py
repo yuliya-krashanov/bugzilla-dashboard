@@ -20,4 +20,4 @@ CSRF_SESSION_KEY = "secret"
 # Secret key for signing cookies
 SECRET_KEY = "secret"
 
-SERVER_NAME = '127.0.0.1:9003'
+SERVER_NAME = '127.0.0.1:9006'
