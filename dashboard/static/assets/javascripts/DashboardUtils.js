@@ -2,29 +2,40 @@ export class chartSettings {
     constructor(labels, data){
       this.labels = labels;
 
+      let colors = [
+              '#6CD0EA',
+              '#FFDE7D',
+              '#FE9ABE',
+              '#4AAF5F',
+              '#E63C3C',
+              '#2196F3',
+              '#673AB7',
+              '#E91E63',
+              '#009688',
+              '#CDDC39',
+              '#FF9800',
+              '#795548',
+              '#9C27B0',
+              '#3F51B5',
+              '#00BCD4',
+              '#8BC34A',
+              '#FFC107',
+              '#FF5722',
+              '#C62828'
+      ];
+
+      if (data.length > colors.length)
+          colors = colors.concat(colors);
+
       this.datasets = [{
           data: data,
-          backgroundColor: [
-            '#6CD0EA',
-            '#FFDE7D',
-            '#FE9ABE',
-            '#4AAF5F',
-            '#E63C3C'
-          ],
-          hoverBackgroundColor: [
-            '#6CD0EA',
-            '#FFDE7D',
-            '#FE9ABE',
-            '#4AAF5F',
-            '#E63C3C'
-          ]
-      }]
-    }
-}
+          backgroundColor: colors,
+          hoverBackgroundColor: colors
+      }];
 
-export const PieChartOptions = {
+      this.options = {
             legend: {
-                position: 'right',
+                position: labels.length > 5 ? 'none': 'right',
                 labels: {
                     fontSize: 13,
                     padding: 20,
@@ -59,3 +70,6 @@ export const PieChartOptions = {
             },
             cutoutPercentage: 65,
         };
+    }
+
+}
