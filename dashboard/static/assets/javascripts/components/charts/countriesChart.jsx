@@ -42,6 +42,9 @@ export default class CountriesChart extends React.Component {
 
      render() {
 
+        const countryChartSettings = new chartSettings(this.props.labels, this.props.data);
+        const statesChartSettings = new chartSettings(this.state.statesData.labels, this.state.statesData.data);
+
         return <div className={"chart " + (this.state.statesData.labels.length ? "chart--two " : null)
                 + (this.state.statesActive ? "chart--states-active " : null)}>
                 <div className="chart__wrapper">
@@ -49,7 +52,8 @@ export default class CountriesChart extends React.Component {
                         <h3 className="chart__title">Countries</h3>
                     </div>
                     <div className="chart__container">
-                        <Doughnut data={new chartSettings(this.props.labels, this.props.data)} options={PieChartOptions}
+                        <Doughnut data={{datasets: countryChartSettings.datasets, labels: countryChartSettings.labels}}
+                                  options={countryChartSettings.options}
                                   onElementsClick={this.handleElementsClick.bind(this)} redraw={this.redrawCountry} />
                     </div>
                 </div>
@@ -63,8 +67,8 @@ export default class CountriesChart extends React.Component {
                             </div>
                         </div>
                         <div className="chart__container">
-                             <Doughnut data={new chartSettings(this.state.statesData.labels, this.state.statesData.data)}
-                                       options={PieChartOptions} redraw={true} />
+                             <Doughnut data={{datasets: statesChartSettings.datasets, labels: statesChartSettings.labels}}
+                                       options={statesChartSettings.options} redraw={true} />
                         </div>
                     </div>
                 : null}

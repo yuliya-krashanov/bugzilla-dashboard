@@ -15,6 +15,8 @@ export default class ProjectsChart extends React.Component {
 
      render() {
 
+         const projectChartSettings = new chartSettings(this.props.labels, this.props.data);
+
          return <div className="chart">
              <div className="chart__wrapper">
                  <div className="chart__header">
@@ -22,8 +24,9 @@ export default class ProjectsChart extends React.Component {
                  </div>
                  <div className="chart__container">
                      {this.props.labels.length ?
-                         <Doughnut data={new chartSettings(this.props.labels, this.props.data)} redraw={true}
-                                   options={PieChartOptions} onElementsClick={this.handleElementsClick.bind(this)}/>
+                         <Doughnut data={{datasets: projectChartSettings.datasets, labels: projectChartSettings.labels}}
+                                   redraw={true} options={projectChartSettings.options}
+                                   onElementsClick={this.handleElementsClick.bind(this)}/>
                          : 'No data for these dates!'}
                  </div>
              </div>
