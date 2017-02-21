@@ -19,5 +19,3 @@ CSRF_SESSION_KEY = os.environ.get("SD_CSRF_SESSION_KEY", "")
 
 # Secret key for signing cookies
 SECRET_KEY = os.environ.get("SD_SECRET_KEY", "")
-
-SERVER_NAME = '127.0.0.1:9006'
