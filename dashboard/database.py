@@ -86,10 +86,6 @@ def init_db(bugzilla_db, settings_db, f):
             us_item.states.extend(states)
             settings_db.commit()
 
-        # if not settings_db.query(settings_models.User).count():
-        #     settings_db.add(settings_models.User(login='admin', password='1111'))
-        #     settings_db.commit()
-
         return f(*args, **kwargs)
 
     return decorated_fun

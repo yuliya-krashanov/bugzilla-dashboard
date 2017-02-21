@@ -1,6 +1,6 @@
 from sqlalchemy import Boolean, Column, ForeignKey, Integer, String
 from sqlalchemy.orm import relationship
-from werkzeug.security import generate_password_hash
+from werkzeug.security import check_password_hash, generate_password_hash
 
 from dashboard.database import SettingsBase as Base
 
@@ -83,6 +83,9 @@ class User(Base):
 
     def set_password(self, password):
         self.password = generate_password_hash(password)
+
+    def check_password(self, password):
+        return check_password_hash(self.password, password)
 
     # Required for administrative interface
     def __str__(self):
