@@ -1,0 +1,14 @@
+body {
+  background-color: $body-back-color;
+  font-family: 'Lato', sans-serif;
+  .content {
+    margin-top: 15px;
+    h1{
+      font-size: $h1-size;
+    }
+    h3{
+      font-size: $h3-size;
+      margin: 0;
+    }
+  }
+}
