@@ -6,7 +6,7 @@ source env/bin/activate
 pip install -r requirements.txt
 (cd dashboard/static; npm install; grunt build)
 
-flake8 .
+#flake8 .
 
 pid_file="$HOME/tmp/dash_stats_g.pid"
 if [ -f "$pid_file" ]
