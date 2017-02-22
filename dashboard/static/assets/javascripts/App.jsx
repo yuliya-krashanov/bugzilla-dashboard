@@ -10,23 +10,13 @@ import DashboardActions from './DashboardActions.jsx';
 DashboardActions.loadProjectsData();
 
 class Dashboard extends React.Component {
-    constructor(){
-        super();
-        this.state = DatesStore.getDates();
-    }
-
-    componentWillMount () {
-        DatesStore.on('update', () => {
-            this.setState(DatesStore.getDates());
-        });
-    }
 
     render() {
         return (
             <div className="dashboard">
                 <div className="dashboard__header">
                     <h1 className="dashboard__title">Redwerk Dashboard</h1>
-                    <Datepicker startDate={this.state.startDate} endDate={this.state.endDate} />
+                    <Datepicker />
                 </div>
                 <Charts />
             </div>
