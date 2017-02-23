@@ -4,8 +4,6 @@ from werkzeug.security import check_password_hash, generate_password_hash
 
 from dashboard.database import SettingsBase as Base
 
-metadata = Base.metadata
-
 
 class Country(Base):
     __tablename__ = 'countries'
@@ -27,9 +25,9 @@ class State(Base):
     id = Column(Integer, primary_key=True)
     name = Column(String(length=50), nullable=False)
     code = Column(String(length=8))
-    country_id = Column(Integer, ForeignKey('countries.id', ondelete=u'CASCADE', onupdate=u'CASCADE'),
-                        nullable=False, index=True)
-
+    country_id = Column(
+        Integer, ForeignKey('countries.id', ondelete=u'CASCADE', onupdate=u'CASCADE'), nullable=False, index=True
+    )
     country = relationship('Country', back_populates="states")
     projects = relationship('Project', back_populates="state")
 
@@ -43,10 +41,12 @@ class Project(Base):
     id = Column(Integer, primary_key=True)
     name = Column(String(length=150), nullable=False)
     bz_project_id = Column(Integer, nullable=False, index=True)
-    country_id = Column(Integer, ForeignKey('countries.id', ondelete=u'CASCADE', onupdate=u'CASCADE'),
-                        nullable=True, index=True)
-    state_id = Column(Integer, ForeignKey('states.id', ondelete=u'CASCADE', onupdate=u'CASCADE'),
-                      nullable=True, index=True)
+    country_id = Column(
+        Integer, ForeignKey('countries.id', ondelete=u'CASCADE', onupdate=u'CASCADE'), nullable=True, index=True
+    )
+    state_id = Column(
+        Integer, ForeignKey('states.id', ondelete=u'CASCADE', onupdate=u'CASCADE'), nullable=True, index=True
+    )
     bg_hours = Column(Boolean, nullable=True, default=True)
     average_hours = Column(Integer, nullable=True, default=0)
     enable = Column(Boolean, nullable=False, default=True)
