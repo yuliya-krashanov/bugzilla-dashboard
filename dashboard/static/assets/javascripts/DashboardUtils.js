@@ -1,4 +1,4 @@
-export class chartSettings {
+class chartSettings {
     constructor(labels, data){
       this.labels = labels;
 
@@ -73,3 +73,15 @@ export class chartSettings {
     }
 
 }
+
+
+const formatDataForCharts = (data) => {
+    return data.reduce((fin, item) => {
+         fin.labels.push(item.name);
+         fin.data.push(parseFloat(item.hours.toFixed(2)));
+         return fin;
+     }, { labels: [], data: [] });
+};
+
+
+export { formatDataForCharts, chartSettings };

@@ -3,6 +3,7 @@ import 'whatwg-fetch';
 import dispatcher from '../DashboardDispatcher.jsx';
 import DatesStore from './DatesStore.jsx';
 import ActionTypes from '../constants/ActionTypes.jsx';
+import { formatDataForCharts } from '../DashboardUtils.js';
 
 
 class ProjectStore extends EventEmitter {
@@ -23,22 +24,13 @@ class ProjectStore extends EventEmitter {
         this.projectsData = data;
         for (let items in this.projectsData){
             if (this.projectsData.hasOwnProperty(items))
-                this.chartProjectsData[items] = this._formatDataToChart(this.projectsData[items])
+                this.chartProjectsData[items] = formatDataForCharts(this.projectsData[items])
         }
         this.emit('updateProjectData');
     }
 
-
-    _formatDataToChart(data){
-        return data.reduce((fin, item) => {
-                 fin.labels.push(item.name);
-                 fin.data.push(item.hours);
-                 return fin;
-             }, { labels: [], data: [] });
-    }
-
     statesDataLoaded (data) {
-        this.statesData = this._formatDataToChart(data);
+        this.statesData = formatDataForCharts(data);
         this.emit('updateStatesData');
     }
 
