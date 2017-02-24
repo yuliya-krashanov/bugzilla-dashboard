@@ -138,7 +138,7 @@ def details(bugzilla_db, settings_db):
 
     result = [
         {'name': calendar.month_name[item] if period == 'year' else item,
-         'hours': sum([hours for action, _period, hours in actions if _period == item])}
+         'hours': sum([h for _, p, h in actions if p == item])}
         for item in periods_list
     ]
     return jsonify(result)
