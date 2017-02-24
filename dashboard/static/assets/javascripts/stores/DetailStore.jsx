@@ -4,6 +4,7 @@ import dispatcher from '../DashboardDispatcher.jsx';
 import DatesStore from './DatesStore.jsx';
 import ProjectStore from './ProjectStore.jsx';
 import ActionTypes from '../constants/ActionTypes.jsx';
+import {formatDataForCharts} from '../DashboardUtils.js'
 
 class DetailStore extends EventEmitter {
 
@@ -19,12 +20,7 @@ class DetailStore extends EventEmitter {
 
     dataLoaded (data) {
         this.detailsData = data;
-        this.chartData =  this.detailsData.reduce((fin, item) => {
-                 fin.labels.push(item.label);
-                 fin.data.push(item.data);
-                 return fin;
-             }, { labels: [], data: [] });
-
+        this.chartData =  formatDataForCharts(this.detailsData);
         this.emit('update');
     }
 

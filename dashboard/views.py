@@ -137,8 +137,8 @@ def details(bugzilla_db, settings_db):
         .group_by(getattr(func, group_func)(bugzilla_models.BugsActivity.bug_when)).all()
 
     result = [
-        {'label': calendar.month_name[item] if period == 'year' else item,
-         'data': sum([hours for action, _period, hours in actions if _period == item])}
+        {'name': calendar.month_name[item] if period == 'year' else item,
+         'hours': sum([hours for action, _period, hours in actions if _period == item])}
         for item in periods_list
     ]
     return jsonify(result)

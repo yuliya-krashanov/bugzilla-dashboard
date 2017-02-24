@@ -2,7 +2,7 @@ import React from 'react';
 import {Doughnut} from 'react-chartjs-2';
 import DashboardActions from '../../DashboardActions.jsx';
 import ProjectStore from '../../stores/ProjectStore.jsx';
-import {chartSettings, PieChartOptions} from '../../DashboardUtils.js';
+import {chartSettings} from '../../DashboardUtils.js';
 
 export default class CountriesChart extends React.Component {
      constructor(props){

@@ -1,7 +1,7 @@
 import React from 'react';
 import DashboardActions from '../../DashboardActions.jsx'
 import {Doughnut} from 'react-chartjs-2';
-import {chartSettings, PieChartOptions} from '../../DashboardUtils.js';
+import {chartSettings} from '../../DashboardUtils.js';
 
 
 export default class ProjectsChart extends React.Component {
