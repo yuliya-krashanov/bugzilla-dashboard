@@ -23,6 +23,10 @@ class HoursQueryMixin:
         return projects, places
 
     def get_projects(self, projects_ids):
+
+        if not isinstance(projects_ids, list):
+            projects_ids = [projects_ids]
+
         start_date, end_date = self.get_dates()
         fieldid = bm.Fielddef.query.filter(bm.Fielddef.name == 'work_time').first().id
         queryset = bugzilla_db.query(
