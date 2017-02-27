@@ -1,5 +1,5 @@
 import calendar
-from time import strptime
+import datetime
 from calendar import monthrange
 
 from flask import jsonify, render_template, request
@@ -60,7 +60,7 @@ class DetailsView(View):
     def dispatch_request(self):
         data = request.get_json()
 
-        month = strptime(data.get('startDate'), self.fmt)
+        month = datetime.datetime.strptime(data.get('startDate'), self.fmt)
         period = data.get('period')
 
         start_date = {'month': month, 'year': month.replace(month=1)}.get(period)
