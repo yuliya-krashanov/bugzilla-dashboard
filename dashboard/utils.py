@@ -12,15 +12,17 @@ class HoursQueryMixin:
     date_fmt = "%d.%m.%Y"
 
     def get_hours_by_place(self, projects_ids, place_model):
+        places_res = []
         places = self.get_places(place_model)
         projects = self.get_projects(projects_ids)
+
         for place in places:
             place_hours = sum([p.get('hours') for p in projects if p.get('id') in place.get('projects')])
             if place_hours > 0:
-                place.update({'hours': place_hours})
-            else:
-                places.remove(place)
-        return projects, places
+                place["hours"] = place_hours
+                places_res.append(place)
+
+        return projects, places_res
 
     def get_projects(self, projects_ids):
 
