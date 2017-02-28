@@ -10,7 +10,7 @@ class BugzillaCustomQuery(Query):
     def actions(self, start_date, end_date, fieldid):
         from dashboard.models.bugzilla_models import BugsActivity, Bug
         queryset = self.join(BugsActivity.bug).options(joinedload('bug')).join(Bug.product)
-        queryset = self.filter(and_(
+        queryset = queryset.filter(and_(
             BugsActivity.bug_when >= start_date,
             BugsActivity.bug_when <= end_date,
             BugsActivity.fieldid == fieldid)
