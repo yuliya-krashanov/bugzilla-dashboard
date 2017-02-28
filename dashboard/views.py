@@ -4,13 +4,13 @@ from calendar import monthrange
 
 from flask import jsonify, render_template, request
 from flask.views import View
-
 from sqlalchemy import and_, func
 
 import dashboard.models.bugzilla_models as bm
-from dashboard.models.settings_models import Project, State, Country
 from dashboard import app
 from dashboard.database import bugzilla_db
+from dashboard.models.settings_models import Country, Project, State
+
 from .utils import HoursQueryMixin
 
 
@@ -25,7 +25,7 @@ class ProjectsView(HoursQueryMixin, View):
 
     def dispatch_request(self):
         result = []
-        projects_ids = Project.query.filter(Project.enable == 1).value("bz_project_id")
+        projects_ids = Project.query.filter(Project.enable == 1).values("bz_project_id")
         if projects_ids:
             projects, countries_hours = self.get_hours_by_place(projects_ids, Country)
             result = {'projects': projects, 'countries': countries_hours}
@@ -105,7 +105,7 @@ class Error404View:
         return render_template('errors/404.html'), 404
 
 
-app.add_url_rule('/', view_func=IndexView.as_view('index'))
+app.add_url_rule('/', view_func=IndexView.as_view('index'), endpoint="index")
 app.add_url_rule('/api/projects/', view_func=ProjectsView.as_view('projects'))
 app.add_url_rule('/api/states/', view_func=StatesView.as_view('states'))
 app.add_url_rule('/api/details/', view_func=DetailsView.as_view('details'))
