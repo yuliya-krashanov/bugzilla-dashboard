@@ -4,7 +4,7 @@ import dispatcher from '../DashboardDispatcher.jsx';
 import DatesStore from './DatesStore.jsx';
 import ProjectStore from './ProjectStore.jsx';
 import ActionTypes from '../constants/ActionTypes.jsx';
-import {formatDataForCharts} from '../DashboardUtils.js'
+import {formatDataForCharts, encodeGETQuery} from '../DashboardUtils.js'
 
 class DetailStore extends EventEmitter {
 
@@ -39,17 +39,16 @@ class DetailStore extends EventEmitter {
     }
 
     updateData() {
-         fetch('api/details', {
-            method: 'POST',
+         const params = {
+            startDate: DatesStore.getFormatStartMonth(),
+            projectID: this.projectID,
+            period: this.periods[this.activePeriod],
+         };
+
+         fetch('api/details/' + encodeGETQuery(params), {
             headers: {
-              'Accept': 'application/json',
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify( Object.assign({startDate: DatesStore.getFormatStartMonth()},
-                    {
-                        projectID: this.projectID,
-                        period: this.periods[this.activePeriod]
-                    }))
+              'Accept': 'application/json'
+            }
          })
          .then( (response) => {
             return response.json();

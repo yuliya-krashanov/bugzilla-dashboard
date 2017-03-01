@@ -2,11 +2,13 @@ from werkzeug.security import check_password_hash
 from wtforms import fields, form, validators
 
 import dashboard.models.settings_models as sett_m
-from dashboard.database import with_db
+from dashboard.database import settings_db
 
 
-# Define login and registration forms (for flask-login)
 class LoginForm(form.Form):
+    """
+    Define login and registration forms (for flask-login)
+    """
     login = fields.StringField(validators=[validators.required()])
     password = fields.PasswordField(validators=[validators.required()])
 
@@ -22,6 +24,5 @@ class LoginForm(form.Form):
         if not check_password_hash(user.password, self.password.data):
             raise validators.ValidationError('Invalid password')
 
-    @with_db
-    def get_user(bugzilla_db, settings_db, self):
+    def get_user(self):
         return settings_db.query(sett_m.User).filter_by(login=self.login.data).first()
