@@ -84,4 +84,11 @@ const formatDataForCharts = (data) => {
 };
 
 
-export { formatDataForCharts, chartSettings };
+const encodeGETQuery = params => {
+    const esc = encodeURIComponent;
+    return '?' + Object.keys(params)
+        .map(k => esc(k) + '=' + esc(params[k]))
+        .join('&');
+};
+
+export { formatDataForCharts, chartSettings, encodeGETQuery };

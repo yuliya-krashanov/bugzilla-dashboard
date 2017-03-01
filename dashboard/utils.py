@@ -54,7 +54,6 @@ class HoursQueryMixin:
         return places
 
     def get_dates(self):
-        dates = request.get_json()
-        start_date = datetime.strptime(dates.get('startDate'), self.date_fmt)
-        end_date = datetime.strptime(dates.get('endDate'), self.date_fmt)
+        start_date = datetime.strptime(request.args.get('startDate'), self.date_fmt)
+        end_date = datetime.strptime(request.args.get('endDate'), self.date_fmt)
         return start_date, end_date

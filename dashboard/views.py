@@ -21,7 +21,7 @@ class IndexView(View):
 
 
 class ProjectsView(HoursQueryMixin, View):
-    methods = ['POST']
+    methods = ['GET']
 
     def dispatch_request(self):
         result = []
@@ -34,11 +34,11 @@ class ProjectsView(HoursQueryMixin, View):
 
 
 class StatesView(HoursQueryMixin, View):
-    methods = ['POST']
+    methods = ['GET']
 
     def dispatch_request(self):
         result = []
-        country_id = request.get_json().get('countryID')
+        country_id = request.args.get('countryID')
         states_of_country = State.query.filter(State.country_id == country_id).all()
 
         if states_of_country:
@@ -54,11 +54,11 @@ class StatesView(HoursQueryMixin, View):
 
 
 class DetailsView(View):
-    methods = ['POST']
+    methods = ['GET']
     fmt = "%m.%Y"
 
     def dispatch_request(self):
-        data = request.get_json()
+        data = request.args
 
         month = datetime.datetime.strptime(data.get('startDate'), self.fmt)
         period = data.get('period')

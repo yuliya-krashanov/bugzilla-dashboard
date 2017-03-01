@@ -3,7 +3,7 @@ import 'whatwg-fetch';
 import dispatcher from '../DashboardDispatcher.jsx';
 import DatesStore from './DatesStore.jsx';
 import ActionTypes from '../constants/ActionTypes.jsx';
-import { formatDataForCharts } from '../DashboardUtils.js';
+import { formatDataForCharts, encodeGETQuery } from '../DashboardUtils.js';
 
 
 class ProjectStore extends EventEmitter {
@@ -35,36 +35,29 @@ class ProjectStore extends EventEmitter {
     }
 
     loadProjectsData (){
-        fetch('api/projects', {
-            method: 'POST',
+        fetch('api/projects/' + encodeGETQuery(DatesStore.getFormatDates()) , {
             headers: {
-              'Accept': 'application/json',
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(DatesStore.getFormatDates()),
-
+              'Accept': 'application/json'
+            }
         })
-            .then((response) => {
-                return response.json();
-            })
-            .then( (data) => {
-                this.projectDataLoaded(data);
-            })
-            .catch( console.log );
+        .then((response) => {
+            return response.json();
+        })
+        .then( (data) => {
+            this.projectDataLoaded(data);
+        })
+        .catch( console.log );
     }
 
     loadStatesData (country){
-        fetch('api/states', {
-            method: 'POST',
+        const params = Object.assign(
+            DatesStore.getFormatDates(),
+            { countryID: this.projectsData.countries[country].id });
+
+        fetch('api/states/' + encodeGETQuery(params), {
             headers: {
               'Accept': 'application/json',
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify( Object.assign( DatesStore.getFormatDates(),
-                {
-                    countryID: this.projectsData.countries[country].id
-                })),
-
+            }
         })
         .then((response) => {
             return response.json();
